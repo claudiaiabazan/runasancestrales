@@ -132,6 +132,14 @@ function OracleReading() {
         />
       )}
 
+      {/* Synthesis summary */}
+      {allRevealed && (
+        <ReadingSummary
+          reading={reading}
+          placed={placed}
+        />
+      )}
+
       {/* Reset / share row */}
       {allRevealed && (
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4 animate-fade-in">
