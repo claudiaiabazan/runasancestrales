@@ -341,3 +341,126 @@ function ActiveInterpretation({
     </article>
   );
 }
+
+// ----- Reading synthesis summary -----
+function ReadingSummary({
+  reading,
+  placed,
+}: {
+  reading: ReturnType<typeof getReading> extends infer T ? Exclude<T, undefined> : never;
+  placed: PlacedRune[];
+}) {
+  const items = placed
+    .slice()
+    .sort((a, b) => a.positionIndex - b.positionIndex)
+    .map((p) => ({
+      rune: getRune(p.runeId)!,
+      position: reading.positions[p.positionIndex],
+    }));
+
+  // Aggregate keywords (deduped, capped)
+  const keywords = Array.from(
+    new Set(items.flatMap((i) => i.rune.keywords)),
+  ).slice(0, 8);
+
+  // Tone analysis based on rune symbolism (shadow-leaning runes)
+  const shadowIds = new Set([
+    "hagalaz", "nauthiz", "isa", "thurisaz", "perthro",
+  ]);
+  const shadowCount = items.filter((i) => shadowIds.has(i.rune.id)).length;
+  const tone =
+    shadowCount >= Math.ceil(items.length / 2)
+      ? "Las runas traen una etapa de prueba y depuración: el camino exige paciencia, recogimiento y desapego antes de ver florecer lo nuevo."
+      : shadowCount === 0
+      ? "El conjunto vibra con una energía favorable: el destino sopla a tu favor y te invita a actuar con confianza y gratitud."
+      : "Hay luces y sombras tejidas en este telar: la sabiduría está en honrar ambas y avanzar con conciencia plena.";
+
+  // Build a narrative woven from each position + rune
+  const narrative = items
+    .map(
+      (i) =>
+        `En **${i.position.name}** se alza **${i.rune.name}** (${i.rune.literal.toLowerCase()}): ${i.rune.divinatory}`,
+    );
+
+  return (
+    <section className="mt-12 rounded-xl border border-gold/40 bg-gradient-to-b from-card/60 to-card/30 p-6 md:p-10 backdrop-blur-sm rune-glow animate-fade-in">
+      <div className="text-center mb-6">
+        <p className="font-display text-[0.7rem] uppercase tracking-[0.4em] text-gold/80">
+          Síntesis del Oráculo
+        </p>
+        <h2 className="mt-2 font-display text-2xl md:text-3xl text-secondary text-glow-soft">
+          El mensaje de las {reading.runesRequired} runas
+        </h2>
+        <div className="ceremonial-divider mt-5" />
+      </div>
+
+      <div className="space-y-6">
+        <p className="font-body italic text-foreground/90 leading-relaxed text-center max-w-2xl mx-auto">
+          {tone}
+        </p>
+
+        {keywords.length > 0 && (
+          <div className="flex flex-wrap justify-center gap-2">
+            {keywords.map((k) => (
+              <span
+                key={k}
+                className="rounded-full border border-gold/30 bg-primary/15 px-3 py-1 font-display text-[0.65rem] uppercase tracking-[0.2em] text-gold"
+              >
+                {k}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="ceremonial-divider" />
+
+        <div className="space-y-3">
+          <h3 className="font-display text-sm uppercase tracking-widest text-gold text-center mb-3">
+            Hilo del relato
+          </h3>
+          {narrative.map((line, i) => {
+            const parts = line.split(/\*\*(.+?)\*\*/g);
+            return (
+              <p key={i} className="text-foreground/85 leading-relaxed">
+                <span className="font-display text-gold mr-2">·</span>
+                {parts.map((part, j) =>
+                  j % 2 === 1 ? (
+                    <span key={j} className="font-display text-secondary">
+                      {part}
+                    </span>
+                  ) : (
+                    <span key={j}>{part}</span>
+                  ),
+                )}
+              </p>
+            );
+          })}
+        </div>
+
+        <div className="ceremonial-divider" />
+
+        <div>
+          <h3 className="font-display text-sm uppercase tracking-widest text-gold text-center mb-4">
+            Voces de las runas
+          </h3>
+          <div className="space-y-4 max-w-2xl mx-auto">
+            {items.map((i, idx) => (
+              <blockquote
+                key={idx}
+                className="border-l-2 border-gold/50 pl-4 font-body italic text-secondary/90"
+              >
+                <span className="font-display text-gold not-italic mr-2">
+                  {i.rune.glyph}
+                </span>
+                "{i.rune.message}"
+                <footer className="mt-1 text-[0.65rem] not-italic uppercase tracking-widest text-muted-foreground">
+                  — {i.rune.name} en {i.position.name}
+                </footer>
+              </blockquote>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
