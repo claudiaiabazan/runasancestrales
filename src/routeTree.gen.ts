@@ -9,38 +9,122 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RunasRouteImport } from './routes/runas'
+import { Route as HistorialRouteImport } from './routes/historial'
+import { Route as AcercaRouteImport } from './routes/acerca'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OraculoIndexRouteImport } from './routes/oraculo.index'
+import { Route as OraculoTypeRouteImport } from './routes/oraculo.$type'
 
+const RunasRoute = RunasRouteImport.update({
+  id: '/runas',
+  path: '/runas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistorialRoute = HistorialRouteImport.update({
+  id: '/historial',
+  path: '/historial',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcercaRoute = AcercaRouteImport.update({
+  id: '/acerca',
+  path: '/acerca',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OraculoIndexRoute = OraculoIndexRouteImport.update({
+  id: '/oraculo/',
+  path: '/oraculo/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OraculoTypeRoute = OraculoTypeRouteImport.update({
+  id: '/oraculo/$type',
+  path: '/oraculo/$type',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/acerca': typeof AcercaRoute
+  '/historial': typeof HistorialRoute
+  '/runas': typeof RunasRoute
+  '/oraculo/$type': typeof OraculoTypeRoute
+  '/oraculo/': typeof OraculoIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/acerca': typeof AcercaRoute
+  '/historial': typeof HistorialRoute
+  '/runas': typeof RunasRoute
+  '/oraculo/$type': typeof OraculoTypeRoute
+  '/oraculo': typeof OraculoIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/acerca': typeof AcercaRoute
+  '/historial': typeof HistorialRoute
+  '/runas': typeof RunasRoute
+  '/oraculo/$type': typeof OraculoTypeRoute
+  '/oraculo/': typeof OraculoIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/acerca'
+    | '/historial'
+    | '/runas'
+    | '/oraculo/$type'
+    | '/oraculo/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/acerca' | '/historial' | '/runas' | '/oraculo/$type' | '/oraculo'
+  id:
+    | '__root__'
+    | '/'
+    | '/acerca'
+    | '/historial'
+    | '/runas'
+    | '/oraculo/$type'
+    | '/oraculo/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AcercaRoute: typeof AcercaRoute
+  HistorialRoute: typeof HistorialRoute
+  RunasRoute: typeof RunasRoute
+  OraculoTypeRoute: typeof OraculoTypeRoute
+  OraculoIndexRoute: typeof OraculoIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/runas': {
+      id: '/runas'
+      path: '/runas'
+      fullPath: '/runas'
+      preLoaderRoute: typeof RunasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/historial': {
+      id: '/historial'
+      path: '/historial'
+      fullPath: '/historial'
+      preLoaderRoute: typeof HistorialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/acerca': {
+      id: '/acerca'
+      path: '/acerca'
+      fullPath: '/acerca'
+      preLoaderRoute: typeof AcercaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +132,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/oraculo/': {
+      id: '/oraculo/'
+      path: '/oraculo'
+      fullPath: '/oraculo/'
+      preLoaderRoute: typeof OraculoIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/oraculo/$type': {
+      id: '/oraculo/$type'
+      path: '/oraculo/$type'
+      fullPath: '/oraculo/$type'
+      preLoaderRoute: typeof OraculoTypeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AcercaRoute: AcercaRoute,
+  HistorialRoute: HistorialRoute,
+  RunasRoute: RunasRoute,
+  OraculoTypeRoute: OraculoTypeRoute,
+  OraculoIndexRoute: OraculoIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
