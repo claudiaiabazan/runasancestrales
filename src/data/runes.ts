@@ -348,21 +348,6 @@ export const RUNES: Rune[] = [
     message: "Todo lo que está destinado a crecer necesita su tiempo. Confía en el proceso y verás florecer lo que has sembrado.",
   },
   {
-    id: "dagaz", name: "Dagaz", glyph: "ᛞ", phonetic: "D", literal: "Día, amanecer, transformación positiva", aett: 3,
-    keywords: ["Amanecer", "Despertar", "Avance"],
-    meanings: [
-      "Cambio positivo y claridad: superación de obstáculos e inicio de una etapa luminosa.",
-      "Despertar espiritual: nivel superior de conciencia y entendimiento.",
-      "Final de un ciclo difícil: las dudas y la confusión quedan atrás.",
-    ],
-    divinatory: "Cambio positivo, superación de obstáculos e inicio de una etapa de claridad y éxito. Es momento de actuar.",
-    ritual: "Cerrar ciclos negativos, potenciar el éxito y la luz. Útil en sanación y crecimiento espiritual.",
-    daily: "Si pasaste por un periodo difícil, Dagaz anuncia el amanecer. La transformación está en marcha.",
-    positive: "Despertar, claridad, avance y éxito tras la dificultad.",
-    negative: "Resistencia al cambio o miedo a salir de la zona oscura conocida.",
-    message: "Tras la noche más larga llega el amanecer. Dagaz te invita a abrazar la luz y caminar con conciencia.",
-  },
-  {
     id: "othala", name: "Othala", glyph: "ᛟ", phonetic: "O", literal: "Herencia, legado, territorio", aett: 3,
     keywords: ["Herencia", "Hogar", "Legado"],
     meanings: [
@@ -376,6 +361,21 @@ export const RUNES: Rune[] = [
     positive: "Estabilidad, legado y protección.",
     negative: "Pérdida de identidad, dificultades familiares o miedo a dejar lo conocido.",
     message: "Tu legado es más que lo material; es la sabiduría y las experiencias que dejas en el mundo. Honra tu pasado mientras construyes tu futuro.",
+  },
+  {
+    id: "dagaz", name: "Dagaz", glyph: "ᛞ", phonetic: "D", literal: "Día, amanecer, transformación positiva", aett: 3,
+    keywords: ["Amanecer", "Despertar", "Avance"],
+    meanings: [
+      "Cambio positivo y claridad: superación de obstáculos e inicio de una etapa luminosa.",
+      "Despertar espiritual: nivel superior de conciencia y entendimiento.",
+      "Final de un ciclo difícil: las dudas y la confusión quedan atrás.",
+    ],
+    divinatory: "Cambio positivo, superación de obstáculos e inicio de una etapa de claridad y éxito. Es momento de actuar.",
+    ritual: "Cerrar ciclos negativos, potenciar el éxito y la luz. Útil en sanación y crecimiento espiritual.",
+    daily: "Si pasaste por un periodo difícil, Dagaz anuncia el amanecer. La transformación está en marcha.",
+    positive: "Despertar, claridad, avance y éxito tras la dificultad.",
+    negative: "Resistencia al cambio o miedo a salir de la zona oscura conocida.",
+    message: "Tras la noche más larga llega el amanecer. Dagaz te invita a abrazar la luz y caminar con conciencia.",
   },
 ];
 
