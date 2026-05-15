@@ -36,14 +36,15 @@ export const READINGS: ReadingType[] = [
     description: "Análisis profundo de una situación.",
     longDescription:
       "Una tirada de cinco runas que ilumina las fuerzas que rodean una situación: pasado, esencia, futuro, lo que está por encima y lo que descansa por debajo.",
-    runesRequired: 5,
+    runesRequired: 6,
     shape: "cross",
     positions: [
-      { name: "Pasado", x: 1, y: 2, meaning: "Lo que dejó huella y aún influye." },
-      { name: "Centro", x: 2, y: 2, meaning: "El corazón del asunto, la energía dominante." },
-      { name: "Futuro", x: 3, y: 2, meaning: "Hacia dónde se inclina la balanza." },
-      { name: "Superior", x: 2, y: 1, meaning: "Lo consciente, lo que el cielo te muestra." },
-      { name: "Inferior", x: 2, y: 3, meaning: "Lo subconsciente, raíces ocultas." },
+      { name: "Cielo", x: 2, y: 1, meaning: "Lo que el cielo revela: la inspiración y el destino que desciende sobre ti." },
+      { name: "Superior", x: 2, y: 2, meaning: "Lo consciente, aquello que ya percibes y guía tu mirada." },
+      { name: "Pasado", x: 1, y: 3, meaning: "La raíz de la situación: lo que dejó huella y aún influye." },
+      { name: "Centro", x: 2, y: 3, meaning: "El corazón del asunto, la energía dominante en este momento." },
+      { name: "Futuro", x: 3, y: 3, meaning: "Hacia dónde se inclina la balanza si sigues este sendero." },
+      { name: "Raíz", x: 2, y: 4, meaning: "Lo subconsciente, las raíces ocultas que sostienen todo lo demás." },
     ],
   },
   {
