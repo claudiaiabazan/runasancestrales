@@ -25,9 +25,9 @@ export const READINGS: ReadingType[] = [
     runesRequired: 3,
     shape: "horizontal",
     positions: [
-      { name: "Pasado", x: 1, y: 1, meaning: "La raíz de la situación, lo ya tejido por Urd." },
+      { name: "Pasado", x: 3, y: 1, meaning: "La raíz de la situación, lo ya tejido por Urd." },
       { name: "Presente", x: 2, y: 1, meaning: "La fuerza que actúa ahora, el hilo de Verdandi." },
-      { name: "Futuro", x: 3, y: 1, meaning: "Lo que se aproxima si sigues este sendero, el telar de Skuld." },
+      { name: "Futuro", x: 1, y: 1, meaning: "Lo que se aproxima si sigues este sendero, el telar de Skuld." },
     ],
   },
   {
