@@ -39,12 +39,12 @@ export const READINGS: ReadingType[] = [
     runesRequired: 6,
     shape: "cross",
     positions: [
-      { name: "Cielo", x: 2, y: 1, meaning: "Lo que el cielo revela: la inspiración y el destino que desciende sobre ti." },
-      { name: "Superior", x: 2, y: 2, meaning: "Lo consciente, aquello que ya percibes y guía tu mirada." },
-      { name: "Pasado", x: 1, y: 3, meaning: "La raíz de la situación: lo que dejó huella y aún influye." },
-      { name: "Centro", x: 2, y: 3, meaning: "El corazón del asunto, la energía dominante en este momento." },
-      { name: "Futuro", x: 3, y: 3, meaning: "Hacia dónde se inclina la balanza si sigues este sendero." },
+      { name: "Pasado", x: 3, y: 3, meaning: "La raíz de la situación: lo que dejó huella y aún influye." },
+      { name: "Presente", x: 2, y: 3, meaning: "El corazón del asunto, la energía dominante en este momento." },
+      { name: "Futuro", x: 1, y: 3, meaning: "Hacia dónde se inclina la balanza si sigues este sendero." },
       { name: "Raíz", x: 2, y: 4, meaning: "Lo subconsciente, las raíces ocultas que sostienen todo lo demás." },
+      { name: "Superior", x: 2, y: 2, meaning: "Lo consciente, aquello que ya percibes y guía tu mirada." },
+      { name: "Cielo", x: 2, y: 1, meaning: "Lo que el cielo revela: la inspiración y el destino que desciende sobre ti." },
     ],
   },
   {
