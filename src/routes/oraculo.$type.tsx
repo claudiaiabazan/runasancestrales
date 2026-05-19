@@ -375,12 +375,37 @@ function ReadingSummary({
       ? "El conjunto vibra con una energía favorable: el destino sopla a tu favor y te invita a actuar con confianza y gratitud."
       : "Hay luces y sombras tejidas en este telar: la sabiduría está en honrar ambas y avanzar con conciencia plena.";
 
-  // Build a narrative woven from each position + rune
-  const narrative = items
-    .map(
-      (i) =>
-        `En **${i.position.name}** se alza **${i.rune.name}** (${i.rune.literal.toLowerCase()}): ${i.rune.divinatory}`,
-    );
+  // Connectors per position to weave a flowing narrative
+  const connectorFor = (positionName: string, idx: number): string => {
+    const map: Record<string, string> = {
+      "Pasado": "En el origen de tu raíz, allí donde todo comenzó a tejerse,",
+      "Presente": "y hoy, en el corazón palpitante del momento,",
+      "Futuro": "mientras que en el horizonte que se abre ante ti,",
+      "Raíz": "Bajo tus pies, en los cimientos profundos que te sostienen como persona,",
+      "Superior": "Dentro de ti, en aquello que llevas guardado en lo más íntimo,",
+      "Cielo": "Y desde lo alto, como mensaje claro de los dioses,",
+      "Tronco": "y como tronco que sostiene tu vida actual,",
+      "Rama Izquierda": "por el lado de lo recibido y lo intuitivo,",
+      "Rama Derecha": "y por el lado de lo entregado y la acción,",
+      "Copa Izquierda": "entre tus sueños y aspiraciones más íntimas,",
+      "Copa Derecha": "y en lo que el mundo te devuelve,",
+      "Fruto": "finalmente, como cosecha espiritual de este momento,",
+    };
+    if (map[positionName]) return map[positionName];
+    return idx === 0 ? "Al comienzo de este telar," : idx === items.length - 1 ? "Y para cerrar," : "luego,";
+  };
+
+  const sentenceFor = (positionName: string, runeName: string, runeLiteral: string, divinatory: string, idx: number) => {
+    const connector = connectorFor(positionName, idx);
+    const div = divinatory.trim().replace(/\.$/, "");
+    return `${connector} se alza **${runeName}** —${runeLiteral.toLowerCase()}—, que susurra: ${div.charAt(0).toLowerCase() + div.slice(1)}.`;
+  };
+
+  const narrativeText = items
+    .map((i, idx) => sentenceFor(i.position.name, i.rune.name, i.rune.literal, i.rune.divinatory, idx))
+    .join(" ");
+
+  const narrativeParts = narrativeText.split(/\*\*(.+?)\*\*/g);
 
   return (
     <section className="mt-12 rounded-xl border border-gold/40 bg-gradient-to-b from-card/60 to-card/30 p-6 md:p-10 backdrop-blur-sm rune-glow animate-fade-in">
@@ -418,24 +443,19 @@ function ReadingSummary({
           <h3 className="font-display text-sm uppercase tracking-widest text-gold text-center mb-3">
             Hilo del relato
           </h3>
-          {narrative.map((line, i) => {
-            const parts = line.split(/\*\*(.+?)\*\*/g);
-            return (
-              <p key={i} className="text-foreground/85 leading-relaxed">
-                <span className="font-display text-gold mr-2">·</span>
-                {parts.map((part, j) =>
-                  j % 2 === 1 ? (
-                    <span key={j} className="font-display text-secondary">
-                      {part}
-                    </span>
-                  ) : (
-                    <span key={j}>{part}</span>
-                  ),
-                )}
-              </p>
-            );
-          })}
+          <p className="font-body text-foreground/90 leading-relaxed text-justify max-w-3xl mx-auto">
+            {narrativeParts.map((part, j) =>
+              j % 2 === 1 ? (
+                <span key={j} className="font-display text-secondary">
+                  {part}
+                </span>
+              ) : (
+                <span key={j}>{part}</span>
+              ),
+            )}
+          </p>
         </div>
+
 
         <div className="ceremonial-divider" />
 
