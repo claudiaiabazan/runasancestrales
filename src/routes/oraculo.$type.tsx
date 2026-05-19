@@ -375,30 +375,52 @@ function ReadingSummary({
       ? "El conjunto vibra con una energía favorable: el destino sopla a tu favor y te invita a actuar con confianza y gratitud."
       : "Hay luces y sombras tejidas en este telar: la sabiduría está en honrar ambas y avanzar con conciencia plena.";
 
-  // Connectors per position to weave a flowing narrative
-  const connectorFor = (positionName: string, idx: number): string => {
-    const map: Record<string, string> = {
-      "Pasado": "En el origen de tu raíz, allí donde todo comenzó a tejerse,",
-      "Presente": "y hoy, en el corazón palpitante del momento,",
-      "Futuro": "mientras que en el horizonte que se abre ante ti,",
-      "Raíz": "Bajo tus pies, en los cimientos profundos que te sostienen como persona,",
-      "Superior": "Dentro de ti, en aquello que llevas guardado en lo más íntimo,",
-      "Cielo": "Y desde lo alto, como mensaje claro de los dioses,",
-      "Tronco": "y como tronco que sostiene tu vida actual,",
-      "Rama Izquierda": "por el lado de lo recibido y lo intuitivo,",
-      "Rama Derecha": "y por el lado de lo entregado y la acción,",
-      "Copa Izquierda": "entre tus sueños y aspiraciones más íntimas,",
-      "Copa Derecha": "y en lo que el mundo te devuelve,",
-      "Fruto": "finalmente, como cosecha espiritual de este momento,",
-    };
-    if (map[positionName]) return map[positionName];
-    return idx === 0 ? "Al comienzo de este telar," : idx === items.length - 1 ? "Y para cerrar," : "luego,";
+  // Tense detection per position to keep verbs coherent
+  type Tense = "past" | "present" | "future";
+  const tenseFor = (positionName: string): Tense => {
+    if (positionName === "Pasado") return "past";
+    if (positionName === "Futuro" || positionName === "Cielo" || positionName === "Fruto") return "future";
+    return "present";
   };
 
+  // Conjugate the verb that introduces the rune's message, respecting tense
+  const verbFor = (tense: Tense): string => {
+    if (tense === "past") return "te susurraba";
+    if (tense === "future") return "te susurrará";
+    return "te susurra";
+  };
+
+  // Warm, human openings per position
+  const connectorFor = (positionName: string, idx: number, tense: Tense): string => {
+    const map: Record<string, string> = {
+      "Pasado": "Mirá, todo empezó hace un tiempo: en aquel rincón de tu historia",
+      "Presente": "Hoy, justo en este momento que estás viviendo,",
+      "Futuro": "Y más adelante, cuando el camino se vaya abriendo,",
+      "Raíz": "En lo más hondo, en eso que sos y que te sostiene desde siempre,",
+      "Superior": "Adentro tuyo, en eso íntimo que pocas veces mostrás,",
+      "Cielo": "Y desde arriba, como un guiño de los dioses,",
+      "Tronco": "Y como tronco firme de tu vida hoy,",
+      "Rama Izquierda": "Por el lado de lo que recibís y de tu intuición,",
+      "Rama Derecha": "Y por el lado de lo que entregás y hacés,",
+      "Copa Izquierda": "Entre tus sueños y aquello que anhelás en silencio,",
+      "Copa Derecha": "Y en lo que el mundo te va devolviendo,",
+      "Fruto": "Al final, como cosecha de todo este recorrido,",
+    };
+    if (map[positionName]) return map[positionName];
+    if (idx === 0) return "Para empezar a hilar esta historia,";
+    if (idx === items.length - 1) return "Y para cerrar el círculo,";
+    return "Después,";
+  };
+
+  // Build a sentence with proper verb tense agreement
   const sentenceFor = (positionName: string, runeName: string, runeLiteral: string, divinatory: string, idx: number) => {
-    const connector = connectorFor(positionName, idx);
+    const tense = tenseFor(positionName);
+    const connector = connectorFor(positionName, idx, tense);
+    const verb = verbFor(tense);
+    const aparecer = tense === "past" ? "apareció" : tense === "future" ? "aparecerá" : "aparece";
     const div = divinatory.trim().replace(/\.$/, "");
-    return `${connector} se alza **${runeName}** —${runeLiteral.toLowerCase()}—, que susurra: ${div.charAt(0).toLowerCase() + div.slice(1)}.`;
+    const msg = div.charAt(0).toLowerCase() + div.slice(1);
+    return `${connector} ${aparecer} **${runeName}** —${runeLiteral.toLowerCase()}—, y ${verb}: ${msg}.`;
   };
 
   const narrativeText = items
