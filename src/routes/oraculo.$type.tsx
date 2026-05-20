@@ -378,8 +378,14 @@ function ReadingSummary({
   // Tense detection per position to keep verbs coherent
   type Tense = "past" | "present" | "future";
   const tenseFor = (positionName: string): Tense => {
-    if (positionName === "Pasado") return "past";
-    if (positionName === "Futuro" || positionName === "Cielo" || positionName === "Fruto") return "future";
+    if (positionName === "Pasado" || positionName.endsWith("· Pasado")) return "past";
+    if (
+      positionName === "Futuro" ||
+      positionName === "Cielo" ||
+      positionName === "Fruto" ||
+      positionName.endsWith("· Futuro")
+    )
+      return "future";
     return "present";
   };
 
@@ -405,6 +411,15 @@ function ReadingSummary({
       "Copa Izquierda": "Entre tus sueños y aquello que anhelás en silencio,",
       "Copa Derecha": "Y en lo que el mundo te va devolviendo,",
       "Fruto": "Al final, como cosecha de todo este recorrido,",
+      "Espíritu · Pasado": "En lo alto del castillo, como herencia espiritual del ayer,",
+      "Espíritu · Presente": "Hoy, la chispa divina que arde en vos",
+      "Espíritu · Futuro": "Y desde el cielo, lo que los dioses preparan para vos,",
+      "Mente · Pasado": "En tu mente, aquellos pensamientos que te trajeron hasta aquí,",
+      "Mente · Presente": "Hoy, eso que ocupa tu cabeza y tu corazón,",
+      "Mente · Futuro": "Y más adelante, hacia donde tus pensamientos te llevan,",
+      "Cuerpo · Pasado": "En lo concreto, las acciones de ayer que dejaron huella,",
+      "Cuerpo · Presente": "Hoy, en tu realidad de cada día,",
+      "Cuerpo · Futuro": "Y como cosecha tangible que se aproxima,",
     };
     if (map[positionName]) return map[positionName];
     if (idx === 0) return "Para empezar a hilar esta historia,";
