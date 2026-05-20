@@ -378,12 +378,13 @@ function ReadingSummary({
   // Tense detection per position to keep verbs coherent
   type Tense = "past" | "present" | "future";
   const tenseFor = (positionName: string): Tense => {
-    if (positionName === "Pasado" || positionName.endsWith("· Pasado")) return "past";
+    if (positionName === "Pasado" || positionName.endsWith("· Pasado") || positionName.startsWith("Pasado ·")) return "past";
     if (
       positionName === "Futuro" ||
       positionName === "Cielo" ||
       positionName === "Fruto" ||
-      positionName.endsWith("· Futuro")
+      positionName.endsWith("· Futuro") ||
+      positionName.startsWith("Futuro ·")
     )
       return "future";
     return "present";
