@@ -397,10 +397,64 @@ function ActiveInterpretation({
 function ReadingSummary({
   reading,
   placed,
+  question,
 }: {
   reading: ReturnType<typeof getReading> extends infer T ? Exclude<T, undefined> : never;
   placed: PlacedRune[];
+  question: string | null;
 }) {
+  const callAi = useServerFn(generateOracleNarrative);
+  const [aiNarrative, setAiNarrative] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+
+  const hasQuestion = !!question && question.trim().length > 0;
+
+  useEffect(() => {
+    if (!hasQuestion) return;
+    let cancelled = false;
+    setAiLoading(true);
+    setAiError(null);
+    setAiNarrative(null);
+    callAi({
+      data: {
+        question: question!.trim(),
+        readingName: reading.name,
+        runes: placed
+          .slice()
+          .sort((a, b) => a.positionIndex - b.positionIndex)
+          .map((p) => {
+            const r = getRune(p.runeId)!;
+            const pos = reading.positions[p.positionIndex];
+            return {
+              runeName: r.name,
+              runeLiteral: r.literal,
+              positionName: pos.name,
+              positionMeaning: pos.meaning,
+              divinatory: r.divinatory,
+            };
+          }),
+      },
+    })
+      .then((res) => {
+        if (cancelled) return;
+        setAiNarrative(res.narrative);
+      })
+      .catch((e: unknown) => {
+        if (cancelled) return;
+        const msg = e instanceof Error ? e.message : String(e);
+        if (msg.includes("RATE_LIMIT")) setAiError("El oráculo está siendo muy consultado. Intentá en unos segundos.");
+        else if (msg.includes("CREDITS")) setAiError("Se agotaron los créditos del oráculo. Avisá al guardián del santuario.");
+        else setAiError("El oráculo no pudo tejer el relato. Mostramos el hilo ancestral.");
+      })
+      .finally(() => {
+        if (!cancelled) setAiLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [hasQuestion]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const items = placed
     .slice()
     .sort((a, b) => a.positionIndex - b.positionIndex)
