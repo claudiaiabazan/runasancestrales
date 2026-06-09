@@ -165,8 +165,52 @@ function OracleReading() {
         </div>
       )}
 
+      {/* Question input */}
+      {!allPlaced && submittedQuestion === null && (
+        <section className="mt-4 mb-8 max-w-2xl mx-auto">
+          <div className="rounded-xl border border-gold/25 bg-card/40 backdrop-blur-sm p-5 md:p-6">
+            <label className="block font-display text-[0.7rem] uppercase tracking-[0.3em] text-gold/90 text-center">
+              Tu pregunta al oráculo <span className="text-muted-foreground normal-case tracking-normal">(opcional)</span>
+            </label>
+            <p className="mt-2 text-center text-xs italic text-muted-foreground">
+              Escribí lo que querés consultar. Las runas tejerán una respuesta para vos.
+            </p>
+            <textarea
+              value={question}
+              onChange={(e) => setQuestion(e.target.value.slice(0, 500))}
+              rows={3}
+              placeholder="Ej: ¿Qué necesito saber sobre mi camino profesional?"
+              className="mt-3 w-full rounded-md border border-gold/30 bg-background/50 px-3 py-2 font-body text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-gold/70"
+            />
+            <div className="mt-3 flex flex-wrap justify-center gap-3">
+              <button
+                onClick={() => setSubmittedQuestion(question.trim() || "")}
+                disabled={!question.trim()}
+                className="rounded-md border border-gold/50 bg-primary/30 px-5 py-2 font-display text-[0.7rem] uppercase tracking-[0.25em] text-gold hover:bg-primary/50 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Confirmar pregunta
+              </button>
+              <button
+                onClick={() => setSubmittedQuestion("")}
+                className="rounded-md border border-gold/20 px-5 py-2 font-display text-[0.7rem] uppercase tracking-[0.25em] text-muted-foreground hover:text-gold"
+              >
+                Saltar (lectura general)
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Show submitted question */}
+      {submittedQuestion && (
+        <div className="mt-4 mb-8 max-w-2xl mx-auto text-center">
+          <p className="font-display text-[0.65rem] uppercase tracking-[0.3em] text-gold/70">Tu pregunta</p>
+          <p className="mt-1 font-body italic text-secondary/90">"{submittedQuestion}"</p>
+        </div>
+      )}
+
       {/* Deck */}
-      {!allPlaced && (
+      {!allPlaced && submittedQuestion !== null && (
         <section className="mt-12">
           <div className="mb-6 text-center">
             <p className="font-display text-xs uppercase tracking-[0.3em] text-gold/80">Las 24 runas del Futhark</p>
