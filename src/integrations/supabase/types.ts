@@ -14,13 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      readings: {
+        Row: {
+          created_at: string
+          id: string
+          reading_name: string
+          reading_type: string
+          user_id: string
+          was_paid: boolean
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reading_name: string
+          reading_type: string
+          user_id: string
+          was_paid?: boolean
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reading_name?: string
+          reading_type?: string
+          user_id?: string
+          was_paid?: boolean
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      monthly_reading_count: { Args: { _user_id: string }; Returns: number }
     }
     Enums: {
       [_ in never]: never
