@@ -87,6 +87,8 @@ function OracleReading() {
     setPlaced([]);
     setRevealedCount(0);
     setActiveRuneId(null);
+    setQuestion("");
+    setSubmittedQuestion(null);
   }
 
   return (
