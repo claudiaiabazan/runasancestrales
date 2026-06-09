@@ -50,6 +50,19 @@ function About() {
           Las runas no predicen un destino fijo, sino que iluminan el sendero que tu alma ya recorre.
         </p>
 
+        <div className="ceremonial-divider mx-auto mt-12 w-40" />
+
+        <h2 className="mt-10 text-center font-display text-2xl text-secondary md:text-3xl">
+          Cómo consultar al oráculo
+        </h2>
+        <ol className="mt-6 space-y-4 list-decimal list-inside marker:text-gold/80">
+          <li>Elegí una tirada acorde a tu consulta en el portal del oráculo.</li>
+          <li>Si lo deseás, escribí tu pregunta para personalizar el relato.</li>
+          <li>Revelá las runas, una por una, observando su posición en la tirada.</li>
+          <li>Leé la síntesis del oráculo y el hilo del relato que se entreteje.</li>
+          <li>Debajo está el mensaje de la lectura.</li>
+        </ol>
+
         <div className="mt-10 text-center">
           <Link
             to="/oraculo"
@@ -59,6 +72,7 @@ function About() {
           </Link>
         </div>
       </div>
+
     </div>
   );
 }
