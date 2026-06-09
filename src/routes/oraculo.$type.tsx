@@ -1,12 +1,15 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 import { getReading, type ReadingPosition } from "@/data/readings";
 import { RUNES, getRune, type Rune } from "@/data/runes";
 import { RuneStone } from "@/components/RuneStone";
 import { FlippableRune } from "@/components/FlippableRune";
 import { saveReading } from "@/lib/storage";
 import { generateOracleNarrative } from "@/lib/oracle.functions";
+import { getQuotaStatus, recordReading, FREE_MONTHLY_LIMIT } from "@/lib/quota.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/oraculo/$type")({
