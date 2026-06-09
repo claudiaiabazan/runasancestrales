@@ -60,7 +60,7 @@ function About() {
           <li>Si lo deseás, escribí tu pregunta para personalizar el relato.</li>
           <li>Revelá las runas, una por una, observando su posición en la tirada.</li>
           <li>Leé la síntesis del oráculo y el hilo del relato que se entreteje.</li>
-          <li>Debajo está el mensaje de la lectura.</li>
+          
         </ol>
 
         <div className="mt-10 text-center">
