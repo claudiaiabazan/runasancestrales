@@ -1,10 +1,12 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { getReading, type ReadingPosition } from "@/data/readings";
 import { RUNES, getRune, type Rune } from "@/data/runes";
 import { RuneStone } from "@/components/RuneStone";
 import { FlippableRune } from "@/components/FlippableRune";
 import { saveReading } from "@/lib/storage";
+import { generateOracleNarrative } from "@/lib/oracle.functions";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/oraculo/$type")({
@@ -42,6 +44,8 @@ function OracleReading() {
   const [placed, setPlaced] = useState<PlacedRune[]>([]);
   const [revealedCount, setRevealedCount] = useState(0); // how many are flipped face-up
   const [activeRuneId, setActiveRuneId] = useState<string | null>(null);
+  const [question, setQuestion] = useState("");
+  const [submittedQuestion, setSubmittedQuestion] = useState<string | null>(null);
 
   const allPlaced = placed.length === reading.runesRequired;
   const allRevealed = revealedCount === reading.runesRequired;
@@ -83,6 +87,8 @@ function OracleReading() {
     setPlaced([]);
     setRevealedCount(0);
     setActiveRuneId(null);
+    setQuestion("");
+    setSubmittedQuestion(null);
   }
 
   return (
@@ -137,6 +143,7 @@ function OracleReading() {
         <ReadingSummary
           reading={reading}
           placed={placed}
+          question={submittedQuestion}
         />
       )}
 
@@ -158,8 +165,52 @@ function OracleReading() {
         </div>
       )}
 
+      {/* Question input */}
+      {!allPlaced && submittedQuestion === null && (
+        <section className="mt-4 mb-8 max-w-2xl mx-auto">
+          <div className="rounded-xl border border-gold/25 bg-card/40 backdrop-blur-sm p-5 md:p-6">
+            <label className="block font-display text-[0.7rem] uppercase tracking-[0.3em] text-gold/90 text-center">
+              Tu pregunta al oráculo <span className="text-muted-foreground normal-case tracking-normal">(opcional)</span>
+            </label>
+            <p className="mt-2 text-center text-xs italic text-muted-foreground">
+              Escribí lo que querés consultar. Las runas tejerán una respuesta para vos.
+            </p>
+            <textarea
+              value={question}
+              onChange={(e) => setQuestion(e.target.value.slice(0, 500))}
+              rows={3}
+              placeholder="Ej: ¿Qué necesito saber sobre mi camino profesional?"
+              className="mt-3 w-full rounded-md border border-gold/30 bg-background/50 px-3 py-2 font-body text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-gold/70"
+            />
+            <div className="mt-3 flex flex-wrap justify-center gap-3">
+              <button
+                onClick={() => setSubmittedQuestion(question.trim() || "")}
+                disabled={!question.trim()}
+                className="rounded-md border border-gold/50 bg-primary/30 px-5 py-2 font-display text-[0.7rem] uppercase tracking-[0.25em] text-gold hover:bg-primary/50 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Confirmar pregunta
+              </button>
+              <button
+                onClick={() => setSubmittedQuestion("")}
+                className="rounded-md border border-gold/20 px-5 py-2 font-display text-[0.7rem] uppercase tracking-[0.25em] text-muted-foreground hover:text-gold"
+              >
+                Saltar (lectura general)
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Show submitted question */}
+      {submittedQuestion && (
+        <div className="mt-4 mb-8 max-w-2xl mx-auto text-center">
+          <p className="font-display text-[0.65rem] uppercase tracking-[0.3em] text-gold/70">Tu pregunta</p>
+          <p className="mt-1 font-body italic text-secondary/90">"{submittedQuestion}"</p>
+        </div>
+      )}
+
       {/* Deck */}
-      {!allPlaced && (
+      {!allPlaced && submittedQuestion !== null && (
         <section className="mt-12">
           <div className="mb-6 text-center">
             <p className="font-display text-xs uppercase tracking-[0.3em] text-gold/80">Las 24 runas del Futhark</p>
@@ -346,10 +397,64 @@ function ActiveInterpretation({
 function ReadingSummary({
   reading,
   placed,
+  question,
 }: {
   reading: ReturnType<typeof getReading> extends infer T ? Exclude<T, undefined> : never;
   placed: PlacedRune[];
+  question: string | null;
 }) {
+  const callAi = useServerFn(generateOracleNarrative);
+  const [aiNarrative, setAiNarrative] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+
+  const hasQuestion = !!question && question.trim().length > 0;
+
+  useEffect(() => {
+    if (!hasQuestion) return;
+    let cancelled = false;
+    setAiLoading(true);
+    setAiError(null);
+    setAiNarrative(null);
+    callAi({
+      data: {
+        question: question!.trim(),
+        readingName: reading.name,
+        runes: placed
+          .slice()
+          .sort((a, b) => a.positionIndex - b.positionIndex)
+          .map((p) => {
+            const r = getRune(p.runeId)!;
+            const pos = reading.positions[p.positionIndex];
+            return {
+              runeName: r.name,
+              runeLiteral: r.literal,
+              positionName: pos.name,
+              positionMeaning: pos.meaning,
+              divinatory: r.divinatory,
+            };
+          }),
+      },
+    })
+      .then((res) => {
+        if (cancelled) return;
+        setAiNarrative(res.narrative);
+      })
+      .catch((e: unknown) => {
+        if (cancelled) return;
+        const msg = e instanceof Error ? e.message : String(e);
+        if (msg.includes("RATE_LIMIT")) setAiError("El oráculo está siendo muy consultado. Intentá en unos segundos.");
+        else if (msg.includes("CREDITS")) setAiError("Se agotaron los créditos del oráculo. Avisá al guardián del santuario.");
+        else setAiError("El oráculo no pudo tejer el relato. Mostramos el hilo ancestral.");
+      })
+      .finally(() => {
+        if (!cancelled) setAiLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [hasQuestion]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const items = placed
     .slice()
     .sort((a, b) => a.positionIndex - b.positionIndex)
@@ -481,17 +586,44 @@ function ReadingSummary({
           <h3 className="font-display text-sm uppercase tracking-widest text-gold text-center mb-3">
             Hilo del relato
           </h3>
-          <p className="font-body text-foreground/90 leading-relaxed text-justify max-w-3xl mx-auto">
-            {narrativeParts.map((part, j) =>
-              j % 2 === 1 ? (
-                <span key={j} className="font-display text-secondary">
-                  {part}
-                </span>
-              ) : (
-                <span key={j}>{part}</span>
-              ),
-            )}
-          </p>
+          {hasQuestion && aiLoading && (
+            <p className="font-body italic text-center text-muted-foreground animate-pulse">
+              El oráculo está tejiendo tu respuesta...
+            </p>
+          )}
+          {hasQuestion && aiError && !aiNarrative && (
+            <p className="font-body italic text-center text-destructive/80 text-sm">{aiError}</p>
+          )}
+          {hasQuestion && aiNarrative ? (
+            <div className="font-body text-foreground/90 leading-relaxed max-w-3xl mx-auto space-y-4">
+              {aiNarrative.split(/\n\n+/).map((para, j) => {
+                const parts = para.split(/\*\*(.+?)\*\*/g);
+                return (
+                  <p key={j} className="text-justify">
+                    {parts.map((part, k) =>
+                      k % 2 === 1 ? (
+                        <span key={k} className="font-display text-secondary">{part}</span>
+                      ) : (
+                        <span key={k}>{part}</span>
+                      ),
+                    )}
+                  </p>
+                );
+              })}
+            </div>
+          ) : (!hasQuestion || (aiError && !aiLoading)) ? (
+            <p className="font-body text-foreground/90 leading-relaxed text-justify max-w-3xl mx-auto">
+              {narrativeParts.map((part, j) =>
+                j % 2 === 1 ? (
+                  <span key={j} className="font-display text-secondary">
+                    {part}
+                  </span>
+                ) : (
+                  <span key={j}>{part}</span>
+                ),
+              )}
+            </p>
+          ) : null}
         </div>
 
 
