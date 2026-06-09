@@ -175,11 +175,9 @@ function OracleReading() {
         </div>
       )}
 
-
-  return (
-    <div className="mx-auto max-w-6xl px-4 py-10 md:py-14">
       {/* Header */}
       <div className="mb-8 text-center">
+
         <Link to="/oraculo" className="text-xs uppercase tracking-widest text-muted-foreground hover:text-gold">
           ← Cambiar tirada
         </Link>
