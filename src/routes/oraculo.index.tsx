@@ -28,11 +28,11 @@ function OraculoIndex() {
       <div className="mt-10 mx-auto max-w-3xl text-center">
         <h2 className="font-display text-2xl text-gold">Cómo consultar el oráculo</h2>
         <ol className="mt-6 list-decimal list-inside space-y-3 marker:text-gold/70 font-body text-lg leading-relaxed text-foreground/85">
-          <li>Elige la tirada que resuene con tu pregunta.</li>
-          <li>Toca las runas que esperan en silencio. Cada una bajará al lugar designado.</li>
-          <li>Cuando todas hayan sido elegidas, se voltearán una a una.</li>
-          <li>Toca cada runa colocada para escuchar su mensaje según su posición.</li>
-          <li>Debajo está el mensaje de la lectura.</li>
+          <li>Elegí una tirada acorde a tu consulta en el portal del oráculo.</li>
+          <li>Si lo deseás, escribí tu pregunta para personalizar el relato.</li>
+          <li>Revelá las runas, una por una, observando su posición en la tirada.</li>
+          <li>Leé la síntesis del oráculo y el hilo del relato que se entreteje.</li>
+
         </ol>
       </div>
 
