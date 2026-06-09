@@ -44,6 +44,8 @@ function OracleReading() {
   const [placed, setPlaced] = useState<PlacedRune[]>([]);
   const [revealedCount, setRevealedCount] = useState(0); // how many are flipped face-up
   const [activeRuneId, setActiveRuneId] = useState<string | null>(null);
+  const [question, setQuestion] = useState("");
+  const [submittedQuestion, setSubmittedQuestion] = useState<string | null>(null);
 
   const allPlaced = placed.length === reading.runesRequired;
   const allRevealed = revealedCount === reading.runesRequired;
