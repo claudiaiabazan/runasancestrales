@@ -11,6 +11,7 @@ import {
 import appCss from "../styles.css?url";
 import { Atmosphere } from "@/components/Atmosphere";
 import { SiteHeader } from "@/components/SiteHeader";
+import { AuthProvider } from "@/hooks/use-auth";
 
 function NotFoundComponent() {
   return (
@@ -94,19 +95,21 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <Atmosphere />
-      <div className="relative z-10 flex min-h-screen flex-col">
-        <SiteHeader />
-        <main className="flex-1">
-          <Outlet />
-        </main>
-        <footer className="relative z-10 border-t border-gold/20 py-6 text-center text-xs text-muted-foreground">
-          <p className="font-display tracking-[0.3em] uppercase">
-            ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ ᚹ
-          </p>
-          <p className="mt-2">Basado en el libro · El Camino de las Runas · Sigrid Larsen</p>
-        </footer>
-      </div>
+      <AuthProvider>
+        <Atmosphere />
+        <div className="relative z-10 flex min-h-screen flex-col">
+          <SiteHeader />
+          <main className="flex-1">
+            <Outlet />
+          </main>
+          <footer className="relative z-10 border-t border-gold/20 py-6 text-center text-xs text-muted-foreground">
+            <p className="font-display tracking-[0.3em] uppercase">
+              ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ ᚹ
+            </p>
+            <p className="mt-2">Basado en el libro · El Camino de las Runas · Sigrid Larsen</p>
+          </footer>
+        </div>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
