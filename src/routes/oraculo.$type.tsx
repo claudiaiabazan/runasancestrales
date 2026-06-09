@@ -586,17 +586,44 @@ function ReadingSummary({
           <h3 className="font-display text-sm uppercase tracking-widest text-gold text-center mb-3">
             Hilo del relato
           </h3>
-          <p className="font-body text-foreground/90 leading-relaxed text-justify max-w-3xl mx-auto">
-            {narrativeParts.map((part, j) =>
-              j % 2 === 1 ? (
-                <span key={j} className="font-display text-secondary">
-                  {part}
-                </span>
-              ) : (
-                <span key={j}>{part}</span>
-              ),
-            )}
-          </p>
+          {hasQuestion && aiLoading && (
+            <p className="font-body italic text-center text-muted-foreground animate-pulse">
+              El oráculo está tejiendo tu respuesta...
+            </p>
+          )}
+          {hasQuestion && aiError && !aiNarrative && (
+            <p className="font-body italic text-center text-destructive/80 text-sm">{aiError}</p>
+          )}
+          {hasQuestion && aiNarrative ? (
+            <div className="font-body text-foreground/90 leading-relaxed max-w-3xl mx-auto space-y-4">
+              {aiNarrative.split(/\n\n+/).map((para, j) => {
+                const parts = para.split(/\*\*(.+?)\*\*/g);
+                return (
+                  <p key={j} className="text-justify">
+                    {parts.map((part, k) =>
+                      k % 2 === 1 ? (
+                        <span key={k} className="font-display text-secondary">{part}</span>
+                      ) : (
+                        <span key={k}>{part}</span>
+                      ),
+                    )}
+                  </p>
+                );
+              })}
+            </div>
+          ) : (!hasQuestion || (aiError && !aiLoading)) ? (
+            <p className="font-body text-foreground/90 leading-relaxed text-justify max-w-3xl mx-auto">
+              {narrativeParts.map((part, j) =>
+                j % 2 === 1 ? (
+                  <span key={j} className="font-display text-secondary">
+                    {part}
+                  </span>
+                ) : (
+                  <span key={j}>{part}</span>
+                ),
+              )}
+            </p>
+          ) : null}
         </div>
 
 
