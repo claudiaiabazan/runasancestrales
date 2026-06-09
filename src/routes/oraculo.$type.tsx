@@ -1,12 +1,15 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 import { getReading, type ReadingPosition } from "@/data/readings";
 import { RUNES, getRune, type Rune } from "@/data/runes";
 import { RuneStone } from "@/components/RuneStone";
 import { FlippableRune } from "@/components/FlippableRune";
 import { saveReading } from "@/lib/storage";
 import { generateOracleNarrative } from "@/lib/oracle.functions";
+import { getQuotaStatus, recordReading, FREE_MONTHLY_LIMIT } from "@/lib/quota.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/oraculo/$type")({
@@ -40,6 +43,17 @@ function shuffleDeck(): string[] {
 
 function OracleReading() {
   const { reading } = Route.useLoaderData();
+  const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
+  const fetchQuota = useServerFn(getQuotaStatus);
+  const recordReadingFn = useServerFn(recordReading);
+  const quotaQuery = useQuery({
+    queryKey: ["quota", user?.id],
+    queryFn: () => fetchQuota(),
+    enabled: !!user,
+    staleTime: 30_000,
+  });
+
   const [deck, setDeck] = useState<string[]>(() => shuffleDeck());
   const [placed, setPlaced] = useState<PlacedRune[]>([]);
   const [revealedCount, setRevealedCount] = useState(0); // how many are flipped face-up
@@ -49,6 +63,13 @@ function OracleReading() {
 
   const allPlaced = placed.length === reading.runesRequired;
   const allRevealed = revealedCount === reading.runesRequired;
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate({ to: "/auth" });
+    }
+  }, [user, authLoading, navigate]);
 
   // Auto-flip runes one by one when complete
   useEffect(() => {
@@ -82,6 +103,19 @@ function OracleReading() {
     setPlaced((prev) => [...prev, { runeId, positionIndex: prev.length }]);
   }
 
+  async function handleConfirmQuestion(q: string) {
+    // Record reading in DB (counts against monthly quota)
+    try {
+      await recordReadingFn({
+        data: { readingType: reading.id, readingName: reading.name },
+      });
+      quotaQuery.refetch();
+    } catch (e) {
+      console.error("Failed to record reading", e);
+    }
+    setSubmittedQuestion(q);
+  }
+
   function reset() {
     setDeck(shuffleDeck());
     setPlaced([]);
@@ -91,10 +125,59 @@ function OracleReading() {
     setSubmittedQuestion(null);
   }
 
+  // Auth gate
+  if (authLoading || !user) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-20 text-center">
+        <p className="font-display text-5xl text-gold text-glow">ᚱ</p>
+        <p className="mt-4 text-sm text-muted-foreground italic">Preparando el altar...</p>
+      </div>
+    );
+  }
+
+  // Paywall when monthly quota is exhausted (and no reading in progress)
+  if (quotaQuery.data?.needsPayment && submittedQuestion === null) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-14 text-center">
+        <Link to="/oraculo" className="text-xs uppercase tracking-widest text-muted-foreground hover:text-gold">
+          ← Cambiar tirada
+        </Link>
+        <p className="mt-6 font-display text-5xl text-gold text-glow">ᚺ</p>
+        <h1 className="mt-4 font-display text-2xl tracking-[0.2em] uppercase text-secondary">
+          Llegaste al umbral
+        </h1>
+        <p className="mt-4 font-body italic text-muted-foreground">
+          Ya consultaste tus <strong className="text-gold">{FREE_MONTHLY_LIMIT} lecturas gratis</strong> de este mes.
+          Para continuar, podés desbloquear lecturas adicionales por <strong className="text-gold">USD 2</strong> cada una.
+        </p>
+        <button
+          disabled
+          className="mt-8 rounded-md border border-gold/40 bg-primary/20 px-6 py-3 font-display text-xs uppercase tracking-[0.25em] text-gold/70 cursor-not-allowed"
+        >
+          Pagar USD 2 · Próximamente
+        </button>
+        <p className="mt-4 text-xs text-muted-foreground">
+          El sistema de pago se habilitará en breve. Tu cuota se renueva el primer día del próximo mes.
+        </p>
+        <p className="mt-6 text-xs text-muted-foreground">
+          Lecturas usadas este mes: <span className="text-gold">{quotaQuery.data.used} / {FREE_MONTHLY_LIMIT}</span>
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 md:py-14">
+      {/* Quota badge */}
+      {quotaQuery.data && (
+        <div className="mb-4 text-center text-[0.65rem] uppercase tracking-[0.25em] text-muted-foreground">
+          Lecturas gratis este mes: <span className="text-gold">{quotaQuery.data.used} / {FREE_MONTHLY_LIMIT}</span>
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-8 text-center">
+
         <Link to="/oraculo" className="text-xs uppercase tracking-widest text-muted-foreground hover:text-gold">
           ← Cambiar tirada
         </Link>
@@ -184,14 +267,14 @@ function OracleReading() {
             />
             <div className="mt-3 flex flex-wrap justify-center gap-3">
               <button
-                onClick={() => setSubmittedQuestion(question.trim() || "")}
+                onClick={() => handleConfirmQuestion(question.trim() || "")}
                 disabled={!question.trim()}
                 className="rounded-md border border-gold/50 bg-primary/30 px-5 py-2 font-display text-[0.7rem] uppercase tracking-[0.25em] text-gold hover:bg-primary/50 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Confirmar pregunta
               </button>
               <button
-                onClick={() => setSubmittedQuestion("")}
+                onClick={() => handleConfirmQuestion("")}
                 className="rounded-md border border-gold/20 px-5 py-2 font-display text-[0.7rem] uppercase tracking-[0.25em] text-muted-foreground hover:text-gold"
               >
                 Saltar (lectura general)

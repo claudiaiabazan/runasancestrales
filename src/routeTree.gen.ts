@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RunasRouteImport } from './routes/runas'
 import { Route as HistorialRouteImport } from './routes/historial'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AcercaRouteImport } from './routes/acerca'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OraculoIndexRouteImport } from './routes/oraculo.index'
@@ -24,6 +25,11 @@ const RunasRoute = RunasRouteImport.update({
 const HistorialRoute = HistorialRouteImport.update({
   id: '/historial',
   path: '/historial',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AcercaRoute = AcercaRouteImport.update({
@@ -50,6 +56,7 @@ const OraculoTypeRoute = OraculoTypeRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/acerca': typeof AcercaRoute
+  '/auth': typeof AuthRoute
   '/historial': typeof HistorialRoute
   '/runas': typeof RunasRoute
   '/oraculo/$type': typeof OraculoTypeRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/acerca': typeof AcercaRoute
+  '/auth': typeof AuthRoute
   '/historial': typeof HistorialRoute
   '/runas': typeof RunasRoute
   '/oraculo/$type': typeof OraculoTypeRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/acerca': typeof AcercaRoute
+  '/auth': typeof AuthRoute
   '/historial': typeof HistorialRoute
   '/runas': typeof RunasRoute
   '/oraculo/$type': typeof OraculoTypeRoute
@@ -77,16 +86,25 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/acerca'
+    | '/auth'
     | '/historial'
     | '/runas'
     | '/oraculo/$type'
     | '/oraculo/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/acerca' | '/historial' | '/runas' | '/oraculo/$type' | '/oraculo'
+  to:
+    | '/'
+    | '/acerca'
+    | '/auth'
+    | '/historial'
+    | '/runas'
+    | '/oraculo/$type'
+    | '/oraculo'
   id:
     | '__root__'
     | '/'
     | '/acerca'
+    | '/auth'
     | '/historial'
     | '/runas'
     | '/oraculo/$type'
@@ -96,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AcercaRoute: typeof AcercaRoute
+  AuthRoute: typeof AuthRoute
   HistorialRoute: typeof HistorialRoute
   RunasRoute: typeof RunasRoute
   OraculoTypeRoute: typeof OraculoTypeRoute
@@ -116,6 +135,13 @@ declare module '@tanstack/react-router' {
       path: '/historial'
       fullPath: '/historial'
       preLoaderRoute: typeof HistorialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/acerca': {
@@ -152,6 +178,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AcercaRoute: AcercaRoute,
+  AuthRoute: AuthRoute,
   HistorialRoute: HistorialRoute,
   RunasRoute: RunasRoute,
   OraculoTypeRoute: OraculoTypeRoute,
