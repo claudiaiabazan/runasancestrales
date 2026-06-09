@@ -267,14 +267,14 @@ function OracleReading() {
             />
             <div className="mt-3 flex flex-wrap justify-center gap-3">
               <button
-                onClick={() => setSubmittedQuestion(question.trim() || "")}
+                onClick={() => handleConfirmQuestion(question.trim() || "")}
                 disabled={!question.trim()}
                 className="rounded-md border border-gold/50 bg-primary/30 px-5 py-2 font-display text-[0.7rem] uppercase tracking-[0.25em] text-gold hover:bg-primary/50 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Confirmar pregunta
               </button>
               <button
-                onClick={() => setSubmittedQuestion("")}
+                onClick={() => handleConfirmQuestion("")}
                 className="rounded-md border border-gold/20 px-5 py-2 font-display text-[0.7rem] uppercase tracking-[0.25em] text-muted-foreground hover:text-gold"
               >
                 Saltar (lectura general)
