@@ -58,13 +58,6 @@ function About() {
             Comenzar mi consulta
           </Link>
         </div>
-          <Link
-            to="/oraculo"
-            className="inline-flex items-center justify-center rounded-md border border-gold/60 bg-primary/30 px-8 py-3.5 font-display text-sm uppercase tracking-[0.25em] text-secondary hover:bg-primary/50 rune-glow"
-          >
-            Comenzar mi consulta
-          </Link>
-        </div>
       </div>
     </div>
   );
