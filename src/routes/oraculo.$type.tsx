@@ -143,6 +143,7 @@ function OracleReading() {
         <ReadingSummary
           reading={reading}
           placed={placed}
+          question={submittedQuestion}
         />
       )}
 
