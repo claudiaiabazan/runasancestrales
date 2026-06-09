@@ -50,16 +50,6 @@ function About() {
           Las runas no predicen un destino fijo, sino que iluminan el sendero que tu alma ya recorre.
         </p>
 
-        <div className="ceremonial-divider my-8" />
-
-        <h2 className="font-display text-2xl text-gold">Cómo consultar al oráculo</h2>
-        <ol className="list-decimal list-inside space-y-3 marker:text-gold/70">
-          <li>Elige la tirada que resuene con tu pregunta.</li>
-          <li>Toca las runas que esperan en silencio. Cada una bajará al lugar designado.</li>
-          <li>Cuando todas hayan sido elegidas, se voltearán una a una.</li>
-          <li>Toca cada runa colocada para escuchar su mensaje según su posición.</li>
-        </ol>
-
         <div className="mt-10 text-center">
           <Link
             to="/oraculo"
