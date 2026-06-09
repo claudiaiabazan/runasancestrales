@@ -16,21 +16,7 @@ function OraculoIndex() {
     <div className="mx-auto max-w-5xl px-6 py-16 md:py-24">
       <div className="text-center">
         <p className="font-display text-xs tracking-[0.4em] uppercase text-gold/80">El oráculo</p>
-      </div>
-
-      <section className="mt-10 rounded-xl border border-gold/20 bg-card/40 p-7 backdrop-blur-sm md:p-9">
-        <h2 className="font-display text-2xl text-gold md:text-3xl">Cómo consultar al oráculo</h2>
-        <ol className="mt-5 list-decimal list-inside space-y-3 font-body text-base leading-relaxed text-foreground/85 marker:text-gold/70 md:text-lg">
-          <li>Elige la tirada que resuene con tu pregunta.</li>
-          <li>Toca las runas que esperan en silencio. Cada una bajará al lugar designado.</li>
-          <li>Cuando todas hayan sido elegidas, se voltearán una a una.</li>
-          <li>Toca cada runa colocada para escuchar su mensaje según su posición.</li>
-          <li>Debajo del mensaje de cada runa está el mensaje de toda la lectura.</li>
-        </ol>
-      </section>
-
-      <div className="mt-16 text-center">
-        <h1 className="font-display text-4xl text-secondary text-glow-soft md:text-5xl">
+        <h1 className="mt-3 font-display text-4xl text-secondary text-glow-soft md:text-5xl">
           Elige el camino de tu consulta
         </h1>
         <p className="mt-4 font-body text-lg italic text-muted-foreground">

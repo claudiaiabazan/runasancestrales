@@ -58,7 +58,6 @@ function About() {
           <li>Toca las runas que esperan en silencio. Cada una bajará al lugar designado.</li>
           <li>Cuando todas hayan sido elegidas, se voltearán una a una.</li>
           <li>Toca cada runa colocada para escuchar su mensaje según su posición.</li>
-          <li>Debajo del mensaje de cada runa está el mensaje de toda la lectura.</li>
         </ol>
 
         <div className="mt-10 text-center">
