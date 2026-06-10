@@ -219,12 +219,37 @@ function OracleReading() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 md:py-14">
-      {/* Quota badge */}
-      {quotaQuery.data && (
-        <div className="mb-4 text-center text-[0.65rem] uppercase tracking-[0.25em] text-muted-foreground">
-          Lecturas gratis este mes: <span className="text-gold">{quotaQuery.data.used} / {FREE_MONTHLY_LIMIT}</span>
+      {/* Payment return banner */}
+      {paymentBanner && (
+        <div
+          className={cn(
+            "mb-6 mx-auto max-w-2xl rounded-lg border px-5 py-4 text-center animate-fade-in",
+            paymentBanner === "success" && "border-gold/50 bg-primary/20 text-gold",
+            paymentBanner === "pending" && "border-gold/30 bg-card/40 text-secondary",
+            paymentBanner === "failure" && "border-destructive/50 bg-destructive/10 text-destructive",
+          )}
+        >
+          <p className="font-display text-xs uppercase tracking-[0.25em]">
+            {paymentBanner === "success" && "✦ Pago recibido ✦"}
+            {paymentBanner === "pending" && "Pago pendiente de acreditación"}
+            {paymentBanner === "failure" && "El pago no se completó"}
+          </p>
+          <p className="mt-2 text-sm font-body italic text-muted-foreground">
+            {paymentBanner === "success" && "Tu lectura adicional está desbloqueada. Procedé con la consulta."}
+            {paymentBanner === "pending" && "En cuanto Mercado Pago confirme, vas a poder iniciar la lectura."}
+            {paymentBanner === "failure" && "Podés intentar nuevamente cuando quieras."}
+          </p>
+          <button
+            onClick={() => setPaymentBanner(null)}
+            className="mt-2 text-[0.65rem] uppercase tracking-widest text-muted-foreground hover:text-gold"
+          >
+            Cerrar
+          </button>
         </div>
       )}
+
+      {/* Quota badge */}
+
 
       {/* Header */}
       <div className="mb-8 text-center">
