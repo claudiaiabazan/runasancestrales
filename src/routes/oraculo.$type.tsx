@@ -378,12 +378,12 @@ function OracleReading() {
       {/* Reset / share row */}
       {allRevealed && (
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4 animate-fade-in">
-          <button
-            onClick={reset}
+          <Link
+            to="/oraculo"
             className="rounded-md border border-gold/40 bg-primary/20 px-6 py-2.5 font-display text-xs uppercase tracking-widest text-gold hover:bg-primary/40"
           >
             Nueva consulta
-          </button>
+          </Link>
           <Link
             to="/historial"
             className="rounded-md border border-gold/20 px-6 py-2.5 font-display text-xs uppercase tracking-widest text-muted-foreground hover:text-gold"
