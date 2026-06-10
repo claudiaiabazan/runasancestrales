@@ -51,11 +51,14 @@ function OracleReading() {
   const createPaymentFn = useServerFn(createMercadoPagoPreference);
   const [payLoading, setPayLoading] = useState(false);
   const [payError, setPayError] = useState<string | null>(null);
+  const [awaitingCredit, setAwaitingCredit] = useState(false);
+  const [creditTimeout, setCreditTimeout] = useState(false);
   const quotaQuery = useQuery({
     queryKey: ["quota", user?.id],
     queryFn: () => fetchQuota(),
     enabled: !!user,
     staleTime: 30_000,
+    refetchInterval: awaitingCredit ? 2000 : false,
   });
 
   const [deck, setDeck] = useState<string[]>(() => shuffleDeck());
@@ -71,26 +74,33 @@ function OracleReading() {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     const paid = params.get("paid");
-    if (paid === "1") setPaymentBanner("success");
-    else if (paid === "pending") setPaymentBanner("pending");
+    if (paid === "1") {
+      setPaymentBanner("success");
+      setAwaitingCredit(true); // start polling until webhook credits the user
+    } else if (paid === "pending") setPaymentBanner("pending");
     else if (paid === "0") setPaymentBanner("failure");
     if (paid !== null) {
-      // Refresh quota so the paywall lifts immediately
       quotaQuery.refetch();
-      // Clean the URL
       const url = new URL(window.location.href);
-      url.searchParams.delete("paid");
-      url.searchParams.delete("payment_id");
-      url.searchParams.delete("status");
-      url.searchParams.delete("external_reference");
-      url.searchParams.delete("merchant_order_id");
-      url.searchParams.delete("preference_id");
-      url.searchParams.delete("site_id");
-      url.searchParams.delete("processing_mode");
-      url.searchParams.delete("merchant_account_id");
+      ["paid","payment_id","status","external_reference","merchant_order_id","preference_id","site_id","processing_mode","merchant_account_id","collection_id","collection_status"].forEach(k => url.searchParams.delete(k));
       window.history.replaceState({}, "", url.pathname);
     }
   }, []); // eslint-disable-line
+
+  // Stop polling when credit lands; bail out after ~30s with a manual retry hint
+  useEffect(() => {
+    if (!awaitingCredit) return;
+    if (quotaQuery.data && !quotaQuery.data.needsPayment) {
+      setAwaitingCredit(false);
+      setCreditTimeout(false);
+      return;
+    }
+    const t = setTimeout(() => {
+      setAwaitingCredit(false);
+      setCreditTimeout(true);
+    }, 30_000);
+    return () => clearTimeout(t);
+  }, [awaitingCredit, quotaQuery.data]);
 
 
   const allPlaced = placed.length === reading.runesRequired;
