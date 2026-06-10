@@ -145,16 +145,26 @@ function OracleReading() {
     setPlaced((prev) => [...prev, { runeId, positionIndex: prev.length }]);
   }
 
+  const [recordError, setRecordError] = useState<string | null>(null);
+
   async function handleConfirmQuestion(q: string) {
-    // Record reading in DB (counts against monthly quota)
+    setRecordError(null);
     try {
       await recordReadingFn({
         data: { readingType: reading.id, readingName: reading.name },
       });
-      quotaQuery.refetch();
     } catch (e) {
       console.error("Failed to record reading", e);
+      const msg = e instanceof Error ? e.message : String(e);
+      if (msg.includes("NO_CREDITS")) {
+        setRecordError("Ya usaste tus lecturas gratis y no te quedan créditos. Necesitás pagar para continuar.");
+      } else {
+        setRecordError("No pudimos registrar la lectura. Probá de nuevo en unos segundos.");
+      }
+      quotaQuery.refetch();
+      return;
     }
+    quotaQuery.refetch();
     setSubmittedQuestion(q);
   }
 
@@ -426,6 +436,9 @@ function OracleReading() {
                 Saltar (lectura general)
               </button>
             </div>
+            {recordError && (
+              <p className="mt-3 text-center text-xs text-destructive">{recordError}</p>
+            )}
           </div>
         </section>
       )}

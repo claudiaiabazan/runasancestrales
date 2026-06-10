@@ -48,33 +48,39 @@ export const recordReading = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => RecordInput.parse(data))
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
+    const { userId } = context;
+    // Usamos admin para poder descontar créditos (RLS de profiles bloquea
+    // que el propio usuario edite paid_credits). Seguro: la fn está
+    // protegida por requireSupabaseAuth y todas las escrituras se acotan
+    // a context.userId.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    // Recalcular cuota para decidir si consumir crédito pago
     const start = new Date();
     start.setUTCDate(1);
     start.setUTCHours(0, 0, 0, 0);
 
-    const { count } = await supabase
+    const { count, error: countErr } = await supabaseAdmin
       .from("readings")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId)
       .gte("created_at", start.toISOString());
+    if (countErr) throw new Error(countErr.message);
 
     const used = count ?? 0;
     const needsPaidCredit = used >= FREE_MONTHLY_LIMIT;
     let wasPaid = false;
 
     if (needsPaidCredit) {
-      const { data: profile } = await supabase
+      const { data: profile, error: profErr } = await supabaseAdmin
         .from("profiles")
         .select("paid_credits")
         .eq("id", userId)
         .maybeSingle();
+      if (profErr) throw new Error(profErr.message);
       const credits = profile?.paid_credits ?? 0;
       if (credits <= 0) throw new Error("NO_CREDITS");
 
-      const { error: decErr } = await supabase
+      const { error: decErr } = await supabaseAdmin
         .from("profiles")
         .update({ paid_credits: credits - 1 })
         .eq("id", userId);
@@ -82,7 +88,7 @@ export const recordReading = createServerFn({ method: "POST" })
       wasPaid = true;
     }
 
-    const { error } = await supabase.from("readings").insert({
+    const { error } = await supabaseAdmin.from("readings").insert({
       user_id: userId,
       reading_type: data.readingType,
       reading_name: data.readingName,
