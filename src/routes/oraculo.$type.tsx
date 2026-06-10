@@ -154,7 +154,7 @@ function OracleReading() {
           disabled
           className="mt-8 rounded-md border border-gold/40 bg-primary/20 px-6 py-3 font-display text-xs uppercase tracking-[0.25em] text-gold/70 cursor-not-allowed"
         >
-          Pagar USD 2 · Próximamente
+          Pagar $2.000 ARS · Próximamente
         </button>
         <p className="mt-4 text-xs text-muted-foreground">
           El sistema de pago se habilitará en breve. Tu cuota se renueva el primer día del próximo mes.
