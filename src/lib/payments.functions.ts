@@ -22,10 +22,18 @@ export const createMercadoPagoPreference = createServerFn({ method: "POST" })
 
     const isTest = accessToken.startsWith("TEST-");
 
-    // Build absolute base URL from incoming request
+    // Build absolute base URL. Preferimos PUBLIC_SITE_URL (estable, p.ej.
+    // https://runasancestrales.lovable.app) porque las URLs de preview de
+    // Lovable cambian y MP rechaza/rompe el redirect de vuelta.
     const host = getRequestHeader("host") ?? "";
     const proto = getRequestHeader("x-forwarded-proto") ?? "https";
-    const origin = host ? `${proto}://${host}` : "";
+    const requestOrigin = host ? `${proto}://${host}` : "";
+    const isPreviewHost =
+      host.includes("lovableproject.com") || host.includes("lovable.dev");
+    const origin =
+      process.env.PUBLIC_SITE_URL ||
+      (isPreviewHost ? "https://runasancestrales.lovable.app" : requestOrigin);
+
 
     const body = {
       items: [
