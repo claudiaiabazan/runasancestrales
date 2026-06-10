@@ -15,7 +15,11 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AcercaRouteImport } from './routes/acerca'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OraculoIndexRouteImport } from './routes/oraculo.index'
+import { Route as PagoPendienteRouteImport } from './routes/pago.pendiente'
+import { Route as PagoExitoRouteImport } from './routes/pago.exito'
+import { Route as PagoErrorRouteImport } from './routes/pago.error'
 import { Route as OraculoTypeRouteImport } from './routes/oraculo.$type'
+import { Route as ApiPublicMercadopagoWebhookRouteImport } from './routes/api/public/mercadopago.webhook'
 
 const RunasRoute = RunasRouteImport.update({
   id: '/runas',
@@ -47,11 +51,32 @@ const OraculoIndexRoute = OraculoIndexRouteImport.update({
   path: '/oraculo/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PagoPendienteRoute = PagoPendienteRouteImport.update({
+  id: '/pago/pendiente',
+  path: '/pago/pendiente',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PagoExitoRoute = PagoExitoRouteImport.update({
+  id: '/pago/exito',
+  path: '/pago/exito',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PagoErrorRoute = PagoErrorRouteImport.update({
+  id: '/pago/error',
+  path: '/pago/error',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OraculoTypeRoute = OraculoTypeRouteImport.update({
   id: '/oraculo/$type',
   path: '/oraculo/$type',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMercadopagoWebhookRoute =
+  ApiPublicMercadopagoWebhookRouteImport.update({
+    id: '/api/public/mercadopago/webhook',
+    path: '/api/public/mercadopago/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -60,7 +85,11 @@ export interface FileRoutesByFullPath {
   '/historial': typeof HistorialRoute
   '/runas': typeof RunasRoute
   '/oraculo/$type': typeof OraculoTypeRoute
+  '/pago/error': typeof PagoErrorRoute
+  '/pago/exito': typeof PagoExitoRoute
+  '/pago/pendiente': typeof PagoPendienteRoute
   '/oraculo/': typeof OraculoIndexRoute
+  '/api/public/mercadopago/webhook': typeof ApiPublicMercadopagoWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -69,7 +98,11 @@ export interface FileRoutesByTo {
   '/historial': typeof HistorialRoute
   '/runas': typeof RunasRoute
   '/oraculo/$type': typeof OraculoTypeRoute
+  '/pago/error': typeof PagoErrorRoute
+  '/pago/exito': typeof PagoExitoRoute
+  '/pago/pendiente': typeof PagoPendienteRoute
   '/oraculo': typeof OraculoIndexRoute
+  '/api/public/mercadopago/webhook': typeof ApiPublicMercadopagoWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -79,7 +112,11 @@ export interface FileRoutesById {
   '/historial': typeof HistorialRoute
   '/runas': typeof RunasRoute
   '/oraculo/$type': typeof OraculoTypeRoute
+  '/pago/error': typeof PagoErrorRoute
+  '/pago/exito': typeof PagoExitoRoute
+  '/pago/pendiente': typeof PagoPendienteRoute
   '/oraculo/': typeof OraculoIndexRoute
+  '/api/public/mercadopago/webhook': typeof ApiPublicMercadopagoWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -90,7 +127,11 @@ export interface FileRouteTypes {
     | '/historial'
     | '/runas'
     | '/oraculo/$type'
+    | '/pago/error'
+    | '/pago/exito'
+    | '/pago/pendiente'
     | '/oraculo/'
+    | '/api/public/mercadopago/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -99,7 +140,11 @@ export interface FileRouteTypes {
     | '/historial'
     | '/runas'
     | '/oraculo/$type'
+    | '/pago/error'
+    | '/pago/exito'
+    | '/pago/pendiente'
     | '/oraculo'
+    | '/api/public/mercadopago/webhook'
   id:
     | '__root__'
     | '/'
@@ -108,7 +153,11 @@ export interface FileRouteTypes {
     | '/historial'
     | '/runas'
     | '/oraculo/$type'
+    | '/pago/error'
+    | '/pago/exito'
+    | '/pago/pendiente'
     | '/oraculo/'
+    | '/api/public/mercadopago/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -118,7 +167,11 @@ export interface RootRouteChildren {
   HistorialRoute: typeof HistorialRoute
   RunasRoute: typeof RunasRoute
   OraculoTypeRoute: typeof OraculoTypeRoute
+  PagoErrorRoute: typeof PagoErrorRoute
+  PagoExitoRoute: typeof PagoExitoRoute
+  PagoPendienteRoute: typeof PagoPendienteRoute
   OraculoIndexRoute: typeof OraculoIndexRoute
+  ApiPublicMercadopagoWebhookRoute: typeof ApiPublicMercadopagoWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -165,11 +218,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OraculoIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pago/pendiente': {
+      id: '/pago/pendiente'
+      path: '/pago/pendiente'
+      fullPath: '/pago/pendiente'
+      preLoaderRoute: typeof PagoPendienteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pago/exito': {
+      id: '/pago/exito'
+      path: '/pago/exito'
+      fullPath: '/pago/exito'
+      preLoaderRoute: typeof PagoExitoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pago/error': {
+      id: '/pago/error'
+      path: '/pago/error'
+      fullPath: '/pago/error'
+      preLoaderRoute: typeof PagoErrorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/oraculo/$type': {
       id: '/oraculo/$type'
       path: '/oraculo/$type'
       fullPath: '/oraculo/$type'
       preLoaderRoute: typeof OraculoTypeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/mercadopago/webhook': {
+      id: '/api/public/mercadopago/webhook'
+      path: '/api/public/mercadopago/webhook'
+      fullPath: '/api/public/mercadopago/webhook'
+      preLoaderRoute: typeof ApiPublicMercadopagoWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -182,18 +263,12 @@ const rootRouteChildren: RootRouteChildren = {
   HistorialRoute: HistorialRoute,
   RunasRoute: RunasRoute,
   OraculoTypeRoute: OraculoTypeRoute,
+  PagoErrorRoute: PagoErrorRoute,
+  PagoExitoRoute: PagoExitoRoute,
+  PagoPendienteRoute: PagoPendienteRoute,
   OraculoIndexRoute: OraculoIndexRoute,
+  ApiPublicMercadopagoWebhookRoute: ApiPublicMercadopagoWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

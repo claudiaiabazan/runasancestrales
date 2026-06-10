@@ -9,6 +9,7 @@ import { FlippableRune } from "@/components/FlippableRune";
 import { saveReading } from "@/lib/storage";
 import { generateOracleNarrative } from "@/lib/oracle.functions";
 import { getQuotaStatus, recordReading, FREE_MONTHLY_LIMIT } from "@/lib/quota.functions";
+import { createMercadoPagoPreference, READING_PRICE_ARS } from "@/lib/payments.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
@@ -47,6 +48,9 @@ function OracleReading() {
   const { user, loading: authLoading } = useAuth();
   const fetchQuota = useServerFn(getQuotaStatus);
   const recordReadingFn = useServerFn(recordReading);
+  const createPaymentFn = useServerFn(createMercadoPagoPreference);
+  const [payLoading, setPayLoading] = useState(false);
+  const [payError, setPayError] = useState<string | null>(null);
   const quotaQuery = useQuery({
     queryKey: ["quota", user?.id],
     queryFn: () => fetchQuota(),
@@ -137,6 +141,21 @@ function OracleReading() {
 
   // Paywall when monthly quota is exhausted (and no reading in progress)
   if (quotaQuery.data?.needsPayment && submittedQuestion === null) {
+    async function handlePay() {
+      setPayError(null);
+      setPayLoading(true);
+      try {
+        const res = await createPaymentFn({
+          data: { readingType: reading.id, readingName: reading.name },
+        });
+        window.location.href = res.checkoutUrl;
+      } catch (e) {
+        console.error(e);
+        setPayError("No pudimos iniciar el pago. Probá de nuevo en unos segundos.");
+        setPayLoading(false);
+      }
+    }
+
     return (
       <div className="mx-auto max-w-xl px-4 py-14 text-center">
         <Link to="/oraculo" className="text-xs uppercase tracking-widest text-muted-foreground hover:text-gold">
@@ -148,16 +167,20 @@ function OracleReading() {
         </h1>
         <p className="mt-4 font-body italic text-muted-foreground">
           Ya consultaste tus <strong className="text-gold">{FREE_MONTHLY_LIMIT} lecturas gratis</strong> de este mes.
-          Para continuar, podés desbloquear lecturas adicionales por <strong className="text-gold">$2.000 ARS</strong> cada una.
+          Para continuar, podés desbloquear una lectura adicional por <strong className="text-gold">${READING_PRICE_ARS.toLocaleString("es-AR")} ARS</strong>.
         </p>
         <button
-          disabled
-          className="mt-8 rounded-md border border-gold/40 bg-primary/20 px-6 py-3 font-display text-xs uppercase tracking-[0.25em] text-gold/70 cursor-not-allowed"
+          onClick={handlePay}
+          disabled={payLoading}
+          className="mt-8 rounded-md border border-gold/50 bg-primary/30 px-6 py-3 font-display text-xs uppercase tracking-[0.25em] text-gold hover:bg-primary/50 disabled:opacity-50 disabled:cursor-wait"
         >
-          Pagar $2.000 ARS · Próximamente
+          {payLoading ? "Abriendo Mercado Pago..." : `Pagar $${READING_PRICE_ARS.toLocaleString("es-AR")} con Mercado Pago`}
         </button>
+        {payError && (
+          <p className="mt-3 text-xs text-destructive">{payError}</p>
+        )}
         <p className="mt-4 text-xs text-muted-foreground">
-          El sistema de pago se habilitará en breve. Tu cuota se renueva el primer día del próximo mes.
+          Pago seguro vía Mercado Pago. Tu cuota gratis se renueva el primer día del próximo mes.
         </p>
         <p className="mt-6 text-xs text-muted-foreground">
           Lecturas usadas este mes: <span className="text-gold">{quotaQuery.data.used} / {FREE_MONTHLY_LIMIT}</span>
