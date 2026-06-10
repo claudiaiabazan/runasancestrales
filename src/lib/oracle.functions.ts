@@ -22,6 +22,7 @@ const Input = z.object({
 });
 
 export const generateOracleNarrative = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => Input.parse(data))
   .handler(async ({ data }) => {
     const key = process.env.LOVABLE_API_KEY;
