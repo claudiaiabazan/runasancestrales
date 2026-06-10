@@ -436,6 +436,9 @@ function OracleReading() {
                 Saltar (lectura general)
               </button>
             </div>
+            {recordError && (
+              <p className="mt-3 text-center text-xs text-destructive">{recordError}</p>
+            )}
           </div>
         </section>
       )}
