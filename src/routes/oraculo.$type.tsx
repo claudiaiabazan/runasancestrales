@@ -9,6 +9,7 @@ import { FlippableRune } from "@/components/FlippableRune";
 import { saveReading } from "@/lib/storage";
 import { generateOracleNarrative } from "@/lib/oracle.functions";
 import { getQuotaStatus, recordReading, FREE_MONTHLY_LIMIT } from "@/lib/quota.functions";
+import { createMercadoPagoPreference, READING_PRICE_ARS } from "@/lib/payments.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
