@@ -64,6 +64,34 @@ function OracleReading() {
   const [activeRuneId, setActiveRuneId] = useState<string | null>(null);
   const [question, setQuestion] = useState("");
   const [submittedQuestion, setSubmittedQuestion] = useState<string | null>(null);
+  const [paymentBanner, setPaymentBanner] = useState<"success" | "pending" | "failure" | null>(null);
+
+  // Detect return from Mercado Pago via ?paid=...
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const paid = params.get("paid");
+    if (paid === "1") setPaymentBanner("success");
+    else if (paid === "pending") setPaymentBanner("pending");
+    else if (paid === "0") setPaymentBanner("failure");
+    if (paid !== null) {
+      // Refresh quota so the paywall lifts immediately
+      quotaQuery.refetch();
+      // Clean the URL
+      const url = new URL(window.location.href);
+      url.searchParams.delete("paid");
+      url.searchParams.delete("payment_id");
+      url.searchParams.delete("status");
+      url.searchParams.delete("external_reference");
+      url.searchParams.delete("merchant_order_id");
+      url.searchParams.delete("preference_id");
+      url.searchParams.delete("site_id");
+      url.searchParams.delete("processing_mode");
+      url.searchParams.delete("merchant_account_id");
+      window.history.replaceState({}, "", url.pathname);
+    }
+  }, []); // eslint-disable-line
+
 
   const allPlaced = placed.length === reading.runesRequired;
   const allRevealed = revealedCount === reading.runesRequired;
