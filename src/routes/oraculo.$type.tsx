@@ -148,7 +148,7 @@ function OracleReading() {
         </h1>
         <p className="mt-4 font-body italic text-muted-foreground">
           Ya consultaste tus <strong className="text-gold">{FREE_MONTHLY_LIMIT} lecturas gratis</strong> de este mes.
-          Para continuar, podés desbloquear lecturas adicionales por <strong className="text-gold">USD 2</strong> cada una.
+          Para continuar, podés desbloquear lecturas adicionales por <strong className="text-gold">$2.000 ARS</strong> cada una.
         </p>
         <button
           disabled
