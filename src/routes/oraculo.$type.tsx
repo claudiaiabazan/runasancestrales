@@ -51,11 +51,14 @@ function OracleReading() {
   const createPaymentFn = useServerFn(createMercadoPagoPreference);
   const [payLoading, setPayLoading] = useState(false);
   const [payError, setPayError] = useState<string | null>(null);
+  const [awaitingCredit, setAwaitingCredit] = useState(false);
+  const [creditTimeout, setCreditTimeout] = useState(false);
   const quotaQuery = useQuery({
     queryKey: ["quota", user?.id],
     queryFn: () => fetchQuota(),
     enabled: !!user,
     staleTime: 30_000,
+    refetchInterval: awaitingCredit ? 2000 : false,
   });
 
   const [deck, setDeck] = useState<string[]>(() => shuffleDeck());
@@ -71,26 +74,33 @@ function OracleReading() {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     const paid = params.get("paid");
-    if (paid === "1") setPaymentBanner("success");
-    else if (paid === "pending") setPaymentBanner("pending");
+    if (paid === "1") {
+      setPaymentBanner("success");
+      setAwaitingCredit(true); // start polling until webhook credits the user
+    } else if (paid === "pending") setPaymentBanner("pending");
     else if (paid === "0") setPaymentBanner("failure");
     if (paid !== null) {
-      // Refresh quota so the paywall lifts immediately
       quotaQuery.refetch();
-      // Clean the URL
       const url = new URL(window.location.href);
-      url.searchParams.delete("paid");
-      url.searchParams.delete("payment_id");
-      url.searchParams.delete("status");
-      url.searchParams.delete("external_reference");
-      url.searchParams.delete("merchant_order_id");
-      url.searchParams.delete("preference_id");
-      url.searchParams.delete("site_id");
-      url.searchParams.delete("processing_mode");
-      url.searchParams.delete("merchant_account_id");
+      ["paid","payment_id","status","external_reference","merchant_order_id","preference_id","site_id","processing_mode","merchant_account_id","collection_id","collection_status"].forEach(k => url.searchParams.delete(k));
       window.history.replaceState({}, "", url.pathname);
     }
   }, []); // eslint-disable-line
+
+  // Stop polling when credit lands; bail out after ~30s with a manual retry hint
+  useEffect(() => {
+    if (!awaitingCredit) return;
+    if (quotaQuery.data && !quotaQuery.data.needsPayment) {
+      setAwaitingCredit(false);
+      setCreditTimeout(false);
+      return;
+    }
+    const t = setTimeout(() => {
+      setAwaitingCredit(false);
+      setCreditTimeout(true);
+    }, 30_000);
+    return () => clearTimeout(t);
+  }, [awaitingCredit, quotaQuery.data]);
 
 
   const allPlaced = placed.length === reading.runesRequired;
@@ -163,6 +173,47 @@ function OracleReading() {
       <div className="mx-auto max-w-md px-4 py-20 text-center">
         <p className="font-display text-5xl text-gold text-glow">ᚱ</p>
         <p className="mt-4 text-sm text-muted-foreground italic">Preparando el altar...</p>
+      </div>
+    );
+  }
+
+  // Acreditando pago: mostrar pantalla de espera mientras llega el webhook de MP
+  if (awaitingCredit && submittedQuestion === null) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-20 text-center animate-fade-in">
+        <p className="font-display text-5xl text-gold text-glow animate-pulse">ᚠ</p>
+        <h1 className="mt-6 font-display text-xl tracking-[0.2em] uppercase text-secondary">
+          Acreditando tu pago
+        </h1>
+        <p className="mt-4 font-body italic text-muted-foreground">
+          Mercado Pago está confirmando la transacción. En unos segundos vas a poder iniciar tu lectura.
+        </p>
+        <div className="mt-6 flex justify-center gap-1.5">
+          <span className="h-2 w-2 rounded-full bg-gold/60 animate-bounce" style={{ animationDelay: "0ms" }} />
+          <span className="h-2 w-2 rounded-full bg-gold/60 animate-bounce" style={{ animationDelay: "150ms" }} />
+          <span className="h-2 w-2 rounded-full bg-gold/60 animate-bounce" style={{ animationDelay: "300ms" }} />
+        </div>
+      </div>
+    );
+  }
+
+  // Aviso si el webhook nunca llegó (raro): permitir reintento manual
+  if (creditTimeout && quotaQuery.data?.needsPayment && submittedQuestion === null) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-20 text-center">
+        <p className="font-display text-5xl text-gold text-glow">ᛟ</p>
+        <h1 className="mt-6 font-display text-xl tracking-[0.2em] uppercase text-secondary">
+          Pago en proceso
+        </h1>
+        <p className="mt-4 font-body italic text-muted-foreground">
+          Mercado Pago aún no confirmó el pago. Suele tardar menos de un minuto. Refrescá esta página en unos instantes; si el cobro fue aprobado, tu lectura se desbloquea sola.
+        </p>
+        <button
+          onClick={() => { setCreditTimeout(false); setAwaitingCredit(true); quotaQuery.refetch(); }}
+          className="mt-6 rounded-md border border-gold/50 bg-primary/30 px-6 py-2.5 font-display text-xs uppercase tracking-[0.25em] text-gold hover:bg-primary/50"
+        >
+          Reintentar
+        </button>
       </div>
     );
   }
