@@ -235,13 +235,25 @@ function OracleReading() {
             {paymentBanner === "failure" && "El pago no se completó"}
           </p>
           <p className="mt-2 text-sm font-body italic text-muted-foreground">
-            {paymentBanner === "success" && "Tu lectura adicional está desbloqueada. Procedé con la consulta."}
+            {paymentBanner === "success" && "Tu lectura adicional está desbloqueada."}
             {paymentBanner === "pending" && "En cuanto Mercado Pago confirme, vas a poder iniciar la lectura."}
             {paymentBanner === "failure" && "Podés intentar nuevamente cuando quieras."}
           </p>
+          {paymentBanner === "success" && (
+            <button
+              onClick={() => {
+                setPaymentBanner(null);
+                document.getElementById("question-section")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                document.getElementById("question-textarea")?.focus({ preventScroll: true });
+              }}
+              className="mt-4 rounded-md border border-gold/50 bg-primary/30 px-6 py-2.5 font-display text-xs uppercase tracking-[0.25em] text-gold hover:bg-primary/50"
+            >
+              Comenzar lectura
+            </button>
+          )}
           <button
             onClick={() => setPaymentBanner(null)}
-            className="mt-2 text-[0.65rem] uppercase tracking-widest text-muted-foreground hover:text-gold"
+            className="mt-3 block mx-auto text-[0.65rem] uppercase tracking-widest text-muted-foreground hover:text-gold"
           >
             Cerrar
           </button>
@@ -332,7 +344,7 @@ function OracleReading() {
 
       {/* Question input */}
       {!allPlaced && submittedQuestion === null && (
-        <section className="mt-4 mb-8 max-w-2xl mx-auto">
+        <section id="question-section" className="mt-4 mb-8 max-w-2xl mx-auto scroll-mt-24">
           <div className="rounded-xl border border-gold/25 bg-card/40 backdrop-blur-sm p-5 md:p-6">
             <label className="block font-display text-[0.7rem] uppercase tracking-[0.3em] text-gold/90 text-center">
               Tu pregunta al oráculo <span className="text-muted-foreground normal-case tracking-normal">(opcional)</span>
@@ -341,6 +353,7 @@ function OracleReading() {
               Escribí lo que querés consultar. Las runas tejerán una respuesta para vos.
             </p>
             <textarea
+              id="question-textarea"
               value={question}
               onChange={(e) => setQuestion(e.target.value.slice(0, 500))}
               rows={3}
