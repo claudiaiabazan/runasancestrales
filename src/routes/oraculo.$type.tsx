@@ -344,7 +344,7 @@ function OracleReading() {
 
       {/* Question input */}
       {!allPlaced && submittedQuestion === null && (
-        <section className="mt-4 mb-8 max-w-2xl mx-auto">
+        <section id="question-section" className="mt-4 mb-8 max-w-2xl mx-auto scroll-mt-24">
           <div className="rounded-xl border border-gold/25 bg-card/40 backdrop-blur-sm p-5 md:p-6">
             <label className="block font-display text-[0.7rem] uppercase tracking-[0.3em] text-gold/90 text-center">
               Tu pregunta al oráculo <span className="text-muted-foreground normal-case tracking-normal">(opcional)</span>
@@ -353,6 +353,7 @@ function OracleReading() {
               Escribí lo que querés consultar. Las runas tejerán una respuesta para vos.
             </p>
             <textarea
+              id="question-textarea"
               value={question}
               onChange={(e) => setQuestion(e.target.value.slice(0, 500))}
               rows={3}
