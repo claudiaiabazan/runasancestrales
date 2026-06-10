@@ -177,6 +177,47 @@ function OracleReading() {
     );
   }
 
+  // Acreditando pago: mostrar pantalla de espera mientras llega el webhook de MP
+  if (awaitingCredit && submittedQuestion === null) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-20 text-center animate-fade-in">
+        <p className="font-display text-5xl text-gold text-glow animate-pulse">ᚠ</p>
+        <h1 className="mt-6 font-display text-xl tracking-[0.2em] uppercase text-secondary">
+          Acreditando tu pago
+        </h1>
+        <p className="mt-4 font-body italic text-muted-foreground">
+          Mercado Pago está confirmando la transacción. En unos segundos vas a poder iniciar tu lectura.
+        </p>
+        <div className="mt-6 flex justify-center gap-1.5">
+          <span className="h-2 w-2 rounded-full bg-gold/60 animate-bounce" style={{ animationDelay: "0ms" }} />
+          <span className="h-2 w-2 rounded-full bg-gold/60 animate-bounce" style={{ animationDelay: "150ms" }} />
+          <span className="h-2 w-2 rounded-full bg-gold/60 animate-bounce" style={{ animationDelay: "300ms" }} />
+        </div>
+      </div>
+    );
+  }
+
+  // Aviso si el webhook nunca llegó (raro): permitir reintento manual
+  if (creditTimeout && quotaQuery.data?.needsPayment && submittedQuestion === null) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-20 text-center">
+        <p className="font-display text-5xl text-gold text-glow">ᛟ</p>
+        <h1 className="mt-6 font-display text-xl tracking-[0.2em] uppercase text-secondary">
+          Pago en proceso
+        </h1>
+        <p className="mt-4 font-body italic text-muted-foreground">
+          Mercado Pago aún no confirmó el pago. Suele tardar menos de un minuto. Refrescá esta página en unos instantes; si el cobro fue aprobado, tu lectura se desbloquea sola.
+        </p>
+        <button
+          onClick={() => { setCreditTimeout(false); setAwaitingCredit(true); quotaQuery.refetch(); }}
+          className="mt-6 rounded-md border border-gold/50 bg-primary/30 px-6 py-2.5 font-display text-xs uppercase tracking-[0.25em] text-gold hover:bg-primary/50"
+        >
+          Reintentar
+        </button>
+      </div>
+    );
+  }
+
   // Paywall when monthly quota is exhausted (and no reading in progress)
   if (quotaQuery.data?.needsPayment && submittedQuestion === null) {
     async function handlePay() {
