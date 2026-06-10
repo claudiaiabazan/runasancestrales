@@ -44,9 +44,9 @@ export const createMercadoPagoPreference = createServerFn({ method: "POST" })
         reading_type: data.readingType,
       },
       back_urls: {
-        success: `${origin}/pago/exito`,
-        failure: `${origin}/pago/error`,
-        pending: `${origin}/pago/pendiente`,
+        success: `${origin}/oraculo/${data.readingType}?paid=1`,
+        failure: `${origin}/oraculo/${data.readingType}?paid=0`,
+        pending: `${origin}/oraculo/${data.readingType}?paid=pending`,
       },
       auto_return: "approved",
       notification_url: `${origin}/api/public/mercadopago/webhook`,
