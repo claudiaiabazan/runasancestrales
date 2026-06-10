@@ -249,6 +249,12 @@ function OracleReading() {
       )}
 
       {/* Quota badge */}
+      {quotaQuery.data && (
+        <div className="mb-4 text-center text-[0.65rem] uppercase tracking-[0.25em] text-muted-foreground">
+          Lecturas gratis este mes: <span className="text-gold">{quotaQuery.data.used} / {FREE_MONTHLY_LIMIT}</span>
+        </div>
+      )}
+
 
 
       {/* Header */}
