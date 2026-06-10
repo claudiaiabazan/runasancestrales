@@ -48,6 +48,9 @@ function OracleReading() {
   const { user, loading: authLoading } = useAuth();
   const fetchQuota = useServerFn(getQuotaStatus);
   const recordReadingFn = useServerFn(recordReading);
+  const createPaymentFn = useServerFn(createMercadoPagoPreference);
+  const [payLoading, setPayLoading] = useState(false);
+  const [payError, setPayError] = useState<string | null>(null);
   const quotaQuery = useQuery({
     queryKey: ["quota", user?.id],
     queryFn: () => fetchQuota(),
