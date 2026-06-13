@@ -258,10 +258,16 @@ function OracleReading() {
           Ya consultaste tus <strong className="text-gold">{FREE_MONTHLY_LIMIT} lecturas gratis</strong> de este mes.
           Para continuar, podés desbloquear una lectura adicional por <strong className="text-gold">${READING_PRICE_ARS.toLocaleString("es-AR")} ARS</strong>.
         </p>
+        <div className="mt-6 rounded-lg border border-gold/20 bg-card/30 p-4 text-left">
+          <p className="font-display text-[0.65rem] uppercase tracking-[0.25em] text-gold mb-1.5">⚠ Importante</p>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Asegurate de <strong className="text-foreground/80">no pagar con la misma cuenta de Mercado Pago que recibe el cobro</strong>. Usá otra cuenta, tarjeta o medio de pago distinto para que la transacción se apruebe.
+          </p>
+        </div>
         <button
           onClick={handlePay}
           disabled={payLoading}
-          className="mt-8 rounded-md border border-gold/50 bg-primary/30 px-6 py-3 font-display text-xs uppercase tracking-[0.25em] text-gold hover:bg-primary/50 disabled:opacity-50 disabled:cursor-wait"
+          className="mt-6 rounded-md border border-gold/50 bg-primary/30 px-6 py-3 font-display text-xs uppercase tracking-[0.25em] text-gold hover:bg-primary/50 disabled:opacity-50 disabled:cursor-wait"
         >
           {payLoading ? "Abriendo Mercado Pago..." : `Pagar $${READING_PRICE_ARS.toLocaleString("es-AR")} con Mercado Pago`}
         </button>
